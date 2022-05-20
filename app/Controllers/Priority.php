@@ -82,10 +82,6 @@ class Priority extends BaseController{
     }
 
     public function read($id=null){
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: POST, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-        header('Content-Type: application/json');
 
         $priorityModel = new PriorityModel();
 

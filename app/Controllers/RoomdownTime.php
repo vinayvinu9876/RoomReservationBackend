@@ -19,25 +19,25 @@ class RoomdownTime extends BaseController{
         $validationRes = validateFields($data,"room_down_time_create");
 
         if($this->request->getMethod()!=="post"){
-            echo view("util/error_messages.php",["errors"=>["The request method must be post"]]);
+            echo json_encode(["status"=>"failure","message"=>"The method request must be post"]);
             return;
         }
 
         if(!$validationRes["success"]){
-            $data["errors"] = $validationRes["errors"];
-            echo view("util/error_messages.php",$data);
+            log_message("info"," The error message is ".array_pop($validateRes["errors"]));
+            echo json_encode(["status"=>"failure","message"=>array_pop($validationRes["errors"])]);
             return;
         }
 
         $matchingRecord = $roomDownTimeModel->getOverlappingRecords($data["day"],$data["room_id"],$data["start"],$data["end"]);
 
         if(count($matchingRecord)>0){
-            echo view("util/error_messages.php",["errors"=>["The room down time overlaps with other records"]]);
+            echo json_encode(["status"=>"failure","message"=>"The room down time overlaps with other records"]);
             return;
         }
 
         $roomDownTimeModel->save($data);
-        echo view("util/success.php",["message"=>"Room down time added succesfully"]);
+        echo json_encode(["status"=>"success"]);
         return;
     }
 
@@ -115,6 +115,32 @@ class RoomdownTime extends BaseController{
 
         $downTimeData = $roomDownTimeModel->where(["room_id"=>$room_id])->findAll();
         echo view("util/success.php",["message"=>json_encode($downTimeData)]);
+    }
+
+    public function delete($room_down_time_id = null){
+
+        $roomDownTimeModel = new RoomDownTimeModel();
+
+        if($room_down_time_id===null){
+            echo json_encode(["status"=>"failure","message"=>"Room down time id cannot be null"]);
+            return;
+        }
+        
+        $roomDownTimeData = $roomDownTimeModel->where("id",$room_down_time_id)->findAll();
+
+        if(count($roomDownTimeData)===0){
+            echo json_encode(["status"=>"failure","message"=>"Down time record not found"]);
+            return;
+        }
+
+        try{
+            $roomDownTimeModel->where("id",$room_down_time_id)->delete();
+            echo json_encode(["status"=>"success"]);
+        }
+        catch(\Exception $e){
+            echo json_encode(["status"=>"failure","message"=>$e->getMessage()]);
+        }
+
     }
 
     

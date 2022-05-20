@@ -108,3 +108,25 @@ INSERT INTO roomreservation.room_down_time( id, room_id, `desc`, start, end, day
 INSERT INTO roomreservation.room_down_time( id, room_id, `desc`, start, end, day, created_at, updated_at, `status` ) VALUES ( 3, 2, 'hello world we are partying for while', '09:00:00', '10:00:00', 'mon', '2022-04-25 10.43.24 pm', '2022-04-25 10.43.24 pm', 'inactive');
 INSERT INTO roomreservation.room_features( id, feature_id, room_id, created_at, updated_at, `status`, total_available ) VALUES ( 7, 3, 2, '2022-04-22 08.53.28 pm', '2022-04-25 03.41.18 pm', 'active', 5);
 INSERT INTO roomreservation.room_features( id, feature_id, room_id, created_at, updated_at, `status`, total_available ) VALUES ( 8, 4, 1, '2022-04-25 03.18.29 pm', '2022-04-25 03.18.29 pm', 'active', 5);
+
+
+CREATE TABLE roomreservation.media ( 
+	id                   INT  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	filename             VARCHAR(500)  NOT NULL    ,
+	url                  TEXT  NOT NULL    ,
+	created_on           TIMESTAMP  NOT NULL DEFAULT (now())   ,
+	updated_on           DATE  NOT NULL DEFAULT (curdate())   
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE roomreservation.room_media ( 
+	id                   INT  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	room_id              INT  NOT NULL,
+	media_id             INT  NOT NULL,
+	`status`             VARCHAR(100)  NOT NULL    
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE INDEX fk_room_media_media ON roomreservation.room_media ( media_id );
+
+CREATE INDEX fk_room_media_rooms ON roomreservation.room_media ( room_id );
+
+ALTER TABLE roomreservation.room_media ADD CONSTRAINT fk_room_media_media FOREIGN KEY ( media_id ) REFERENCES roomreservation.media( id ) ON DELETE NO ACTION ON UPDATE NO ACTION;

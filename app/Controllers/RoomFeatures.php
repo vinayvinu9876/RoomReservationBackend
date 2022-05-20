@@ -10,6 +10,37 @@ class RoomFeatures extends BaseController{
         return;
     }
 
+    public function delete($room_feature_id=null){
+
+        if($room_feature_id===null){
+            echo json_encode(["status"=>"failure","message"=>"Room feature id cannot be null"]);
+            return;
+        }
+
+        $roomfeatureModel = new RoomFeaturesModel();
+
+        try{
+
+            $featureData = $roomfeatureModel->where("id",$room_feature_id)->findAll();
+        
+
+            if(count($featureData)===0){
+                echo json_encode(["status"=>"failure","message"=>"Feature data doesn't exist"]);
+                return;
+            }
+
+            $roomfeatureModel->where("id",$room_feature_id)->delete();
+
+            echo json_encode(["status"=>"success"]);
+        }
+        catch(\Exception $e){
+            log_message("error",$e->getMessage());
+            echo json_encode(["status"=>"failure","message"=>$e->getMessage()]);
+        }
+
+    }
+
+
     public function create(){
         $roomfeatureModel = new RoomFeaturesModel();
 
@@ -21,14 +52,14 @@ class RoomFeatures extends BaseController{
 
         if($this->request->getMethod()==="post" && $validationRes["success"]){
             $roomfeatureModel->save($data);
-            echo view("util/success.php",["message"=>"Room Features added succesfully"]);
+            echo json_encode(["status"=>"success"]);
+            return;
         }
         else{
             $data["errors"] = $validationRes["errors"];
-            echo view("util/error_messages.php",$data);
+            echo json_encode(["status"=>"failure","message"=>array_pop($validationRes["errors"])]);
+            return;
         }
-
-        return;
     }
 
     public function update($id=null){
@@ -68,11 +99,6 @@ class RoomFeatures extends BaseController{
 
     public function read($room_id=null,$status=null){
         $roomfeatureModel = new RoomFeaturesModel();
-
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: POST, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-        header('Content-Type: application/json');
         
         if($room_id===null){
             $result = ["status"=>"failure","message"=>"Room id cannot be null"];

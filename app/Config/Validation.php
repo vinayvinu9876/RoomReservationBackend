@@ -118,7 +118,16 @@ class Validation
                 'in_list' => 'Room status is not valid'
             ]
         ]
+    ];
 
+    public $room_image_add = [
+        "image" => [
+            "rules"     => "required",
+            "errors"    => [
+                'required' => "Image is not valid"
+            ] 
+        ]
+        
     ];
 
     public $features_create = [

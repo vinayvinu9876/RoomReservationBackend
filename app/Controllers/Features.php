@@ -26,10 +26,6 @@ class Features extends BaseController{
     }
 
     public function create(){
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: POST, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-        header('Content-Type: application/json');
 
         if(!($this->request->getMethod()==='post')){
             $responseData = ["status"=>"failure","message"=>"Request method must be post"];
@@ -88,11 +84,6 @@ class Features extends BaseController{
     }
 
     public function read($status=null){
-
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: POST, OPTIONS");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-        header('Content-Type: application/json');
 
         $featuresModel = new FeaturesModel();
 
