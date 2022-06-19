@@ -511,5 +511,76 @@ class Validation
             ]
         ]
     ];
+
+    public $reserve_room = [
+        "room_id" => [ 
+            "rules" => "required|is_not_unique[rooms.room_id]",
+            "errors" => [
+                "required" => "Room id is required",
+                "is_not_unique" => "Room id doesn't exist"
+            ]
+        ],
+        "reservation_description" => [
+            "rules" => "required|max_length[1000]|min_length[10]",
+            "errors" => [
+                "required" => "Description is required",
+                "max_length" => "Description cannot be more than 1000 characters",
+                "min_length" => "Description must have atleast 10 characters"
+            ],
+        ],
+        "start_timestamp" => [
+            "rules" => "required|numeric|greater_than[1654683794]|less_than[2617986600]",
+            "errors" => [
+                "required" => "Start time is required",
+                "numeric" => "Start time is not valid",
+                "greater_than" => "Invalid start time",
+                "less_than" => "Invalid star time",
+            ]
+        ],
+        "end_timestamp" => [
+            "rules" => "required|numeric|greater_than[1654683794]|less_than[2617986600]",
+            "errors" => [
+                "required" => "End time is required",
+                "numeric" => "Invalid end time",
+                "greater_than" => "Invalid end time",
+                "less_than" => "Invalid end date"
+            ]
+        ],
+        "priority_id" => [
+            "rules" => "required|numeric|is_not_unique[priority.id]",
+            "errors" => [
+                "required" => "Priority Id is required",
+                "numeric" => "Priority id not valid",
+                "is_not_unique" => "Priority doesn't exist"
+            ]
+        ],
+        "attendees_email" => [
+            "rules" => "required|min_length[4]|max_length[3000]|valid_emails",
+            "errors" => [
+                "required" => "Please add attendees email",
+                "min_length" => "Please add attendees email",
+                "max_length" => "Attendees Email exceeded maximum limit",
+                "valid_emails" => "Please add valid email ids"
+            ]
+        ],
+        "no_of_attendees" => [
+            "rules" => "required|numeric|greater_than[0]|less_than[1000]",
+            "errors" => [
+                "required" => "Please add no of attendees",
+                "numeric" => "Invalid no of attendees",
+                "greater_than" => "No of attendees must be more than 0",
+                "less_than" => "No of attendees must be less than 1000"
+            ]
+        ],
+        "reserved_by_email" => [
+            "rules" => "required|valid_email",
+            "errors" => [
+                "required" => "Please add the reservee email id",
+                "valid_email" => "Please add a valid reservee email id"
+            ]
+        ]   
+
+
+    ];
     
 }

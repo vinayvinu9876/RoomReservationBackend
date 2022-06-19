@@ -8,7 +8,7 @@ class RoomdownTime extends BaseController{
         echo "Hello from room down time";
         return;
     }
-
+ 
     public function create(){
         $roomDownTimeModel = new RoomDownTimeModel();
 
@@ -23,8 +23,9 @@ class RoomdownTime extends BaseController{
             return;
         }
 
+
         if(!$validationRes["success"]){
-            log_message("info"," The error message is ".array_pop($validateRes["errors"]));
+            log_message("info"," The error message is ".array_pop($validationRes["errors"]));
             echo json_encode(["status"=>"failure","message"=>array_pop($validationRes["errors"])]);
             return;
         }

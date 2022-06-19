@@ -141,6 +141,11 @@ class RoomDownTimeModel extends Model{
         return true;
 
     }
+
+    public function getRoomDownTime($room_id,$day){
+        $downTimeresult = $this->where(["room_id"=>$room_id])->where(["day"=>$day])->findAll();
+        return $downTimeresult;
+    }
 }
 
 ?>

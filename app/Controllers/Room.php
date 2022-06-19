@@ -3,6 +3,7 @@ namespace App\Controllers;
 use App\Models\RoomModel;
 use App\Models\RoomFeaturesModel;
 use App\Models\RoomDownTimeModel;
+use App\Models\RoomReservationModel;
 use App\Models\MediaModel;
 use App\Models\RoomMediaModel;
 use \Hermawan\DataTables\DataTable;
@@ -46,18 +47,21 @@ class Room extends BaseController{
         $roomModel = new RoomModel();
 
         if($id!=null){
-            $data["rooms"] = $roomModel->where("room_id",$id)->findAll();
+            $roomQueryResult = $roomModel->where("room_id",$id)->findAll();
 
-            if(count($data["rooms"])===0){
+            if(count($roomQueryResult)===0){
                 echo json_encode(["status"=>"failure","message"=>"Room data with id doesn't exist"]);
                 return;                
             }
 
-            $roomData = $data["rooms"][0];
+            $roomData = $roomQueryResult[0];
             
             $roomDetails = $this->getRoomData($id);
 
             $data["room_data"] = $roomData;
+            $data["room_features"] = $roomDetails["room_features"]; 
+            $data["room_media"] = $roomDetails["room_media"];
+            $data["room_down_time"] = $roomDetails["room_down_time"];
  
             $resultPayload = [
                 "status" => "success",
@@ -393,6 +397,46 @@ class Room extends BaseController{
             ]);
         }
     }
+
+    public function roomschedule($id=null,$date=null){
+
+        if($id==null || $date==null){
+            $response = [
+                "status"=>"failure",
+                "message" => "Room id or date not valid"
+            ];
+            echo json_encode($response);
+            return;
+        }
+
+        if(!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)){
+            echo json_encode([
+                "status" => "failure",
+                "message" => "Invalid date format"
+            ]);
+            return;
+        }
+
+        $roomDownTimeModel      = new RoomDownTimeModel();
+        $roomReservationModel   =  new RoomReservationModel();
+
+        $timestamp  = strtotime($date);
+        $dayName    = date('D', $timestamp);
+
+        $roomDownTime = $roomDownTimeModel->getRoomDownTime($id,strtolower($dayName));
+        $reservationData = $roomReservationModel->getReservationsForRoom($id,$date);
+        
+
+        echo json_encode([
+            "status" => "success",
+            "data" => [
+                "downtime" => $roomDownTime,
+                "reserved" => $reservationData,
+            ]
+        ]);
+    }
+
+    
 }
 
 ?>
