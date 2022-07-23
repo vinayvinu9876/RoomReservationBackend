@@ -120,6 +120,47 @@ class RoomFeatures extends BaseController{
         return;
     }
 
+
+    public function add_or_remove(){
+
+        $fields = [ "room_feature_id","value"];
+        $data = getRequestData($fields,$this->request);
+
+        $result = ["status"=>null,"message"=>null];
+
+        if(!$data["room_feature_id"]){
+            $result["status"] = "failure";
+            $result["message"] = "Room Feature id is not valid";
+            echo json_encode($result);
+            return;
+        }
+
+        if(!$data["value"] || $data["value"]==0){
+            $result["status"] = "failure";
+            $result["message"] = "Value is not valid";
+            echo json_encode($result);
+            return;
+        }
+
+        $roomfeatureModel = new RoomFeaturesModel();
+
+        try{
+            $roomfeatureModel->add_or_remove_feature($data["room_feature_id"],$data["value"]);
+            $result["status"] = "success";
+            echo json_encode($result);
+        }
+        catch(\Exception $e){
+            $result["status"] = "failure";
+            $result["message"] = $e->getMessage();
+
+            echo json_encode($result);
+            return;
+        }
+        
+        
+
+    }
+
 }
 
 ?>

@@ -31,8 +31,6 @@ class Room extends BaseController{
                ->toJson();
     }
 
-
-
     public function view(){
         $roomModel = new RoomModel();
 
@@ -100,6 +98,58 @@ class Room extends BaseController{
         }
 
         echo json_encode(["status"=>"success","data"=>$allRoomsData]);
+    }
+
+    public function get_admin_rooms($pageNo=1){
+
+        $limit = 20;
+        $offset = ($limit*($pageNo-1));
+
+        $fields = ["searchText"];
+
+        $data = getRequestData($fields,$this->request);
+
+        if(!array_key_exists("searchText",$data)){
+            $data["searchText"] = "";
+        }
+
+        $roomModel = new RoomModel();
+
+        $results = $roomModel->get_admin_rooms($limit,$offset,$data["searchText"]);
+
+        $results["pageNo"] = $pageNo;
+
+        echo json_encode(
+            [
+                "status" => "success",
+                "data" => $results 
+            ]
+        );
+
+    }
+
+    public function get_user_room_data($pageNo = 1){
+        $roomModel = new RoomModel();
+
+        $fields = ["searchText"];
+
+        $data = getRequestData($fields,$this->request);
+
+        if(!array_key_exists("searchText",$data)){
+            $data["searchText"] = "";
+        }
+
+        $limit = 20;
+        $offset = (($pageNo-1)*$limit);
+
+        $results = $roomModel->get_user_rooms($pageNo,$limit,$offset,$data["searchText"]);
+
+        $result = [
+            "status" => "success",
+            "data" => $results
+        ];
+
+        echo json_encode($result);
     }
 
     private function getRoomData($roomId){
@@ -434,6 +484,60 @@ class Room extends BaseController{
                 "reserved" => $reservationData,
             ]
         ]);
+    }
+
+    public function getRoomReservationData($room_id=null){
+        if($room_id==null){
+            echo json_encode([
+                "status" => "failure",
+                "message" => "Room id must be provided"
+            ]);
+            return;
+        }
+
+        $roomReservationModal = new RoomReservationModel();
+
+        $reservationData = $roomReservationModal->geLast100Reservations($room_id);
+
+        echo json_encode([
+            "status" => "success",
+            "data" => $reservationData
+        ]);
+    }
+
+
+    public function cancel_meeting($reservation_id=null){
+        /*
+        $fields = ["reservation_id"];
+        $data = getRequestData($fields,$this->request);
+        */
+        if(!$reservation_id){
+            echo json_encode([
+                "status" => "failure",
+                "message" => "Meeting is not valid"
+            ]);
+            return;
+        }
+
+        $roomReservationModel = new RoomReservationModel();
+
+        try{
+            $roomReservationModel->cancel_reservation($reservation_id);
+
+            echo json_encode([
+                "status"=>"success"
+            ]);
+        }
+        catch(\Exception $e){
+            echo json_encode(
+                [
+                    "status" => "failure",
+                    "message" => $e->getMessage()
+                ]
+            );
+        }
+
+
     }
 
     

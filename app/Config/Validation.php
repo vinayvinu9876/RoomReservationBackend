@@ -477,7 +477,7 @@ class Validation
 
     public $priority_update = [
         "name" => [
-            "rules" => "if_exist|min_length[3]|max_length[100]|is_unique[priority.name]",
+            "rules" => "if_exist|min_length[3]|max_length[100]",
             "errors" => [
                 "required" => "Priority name is required",
                 "min_length" => "Priority name must have minimum of 3 characters",
@@ -494,7 +494,7 @@ class Validation
             ]
         ],
         "priority_no" => [
-            "rules" => "if_exist|numeric|greater_than[0]|less_than[100]|is_unique[priority.priority_no,priority_no,{priority_no}]",
+            "rules" => "if_exist|numeric|greater_than[0]|less_than[100]",
             "errors" => [
                 "required" => "Priority no. is required",
                 "numeric" => "Priority no. must be a number",
@@ -575,10 +575,28 @@ class Validation
         "reserved_by_email" => [
             "rules" => "required|valid_email",
             "errors" => [
-                "required" => "Please add the reservee email id",
+                "required" => "Please add reservee email id",
                 "valid_email" => "Please add a valid reservee email id"
             ]
-        ]   
+        ],
+        "meeting_title" => [
+            "rules" => "required|min_length[4]|max_length[200]",
+            "errors" => [
+                "required" => "Please add meeting title",
+                "min_length"=>"Meeting title must have atleast 4 characters",
+                "max_length" => "Meeting title must contain characters less than 200"
+            ]
+        ],
+        "headed_by" => [
+            "rules" => "required|min_length[3]|max_length[100]",
+            "errors" => [
+                "required" => "Please add the name of meeting head",
+                "min_length" => "Name of meeting head must contain atleast 3 characters",
+                "max_length" => "Name of meeting head cannot have more than 100 characters"
+            ]
+        ]
+
+
 
 
     ];

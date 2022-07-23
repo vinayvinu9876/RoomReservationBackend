@@ -11,7 +11,7 @@ class RoomReservation extends BaseController{
     public function reserve(){
         $roomReservationModel = new RoomReservationModel();
         
-        $fields = ["room_id","reservation_description","reserved_by_email","start_timestamp","end_timestamp","priority_id","attendees_email","no_of_attendees"];
+        $fields = ["room_id","meeting_title","headed_by","reservation_description","reserved_by_email","start_timestamp","end_timestamp","priority_id","attendees_email","no_of_attendees"];
 
         $data = getRequestData($fields,$this->request);
 
@@ -73,9 +73,39 @@ class RoomReservation extends BaseController{
                 "message" => $e.message()
             ]);
         }
-
-        
     }
+
+    public function get_meeting_list_for_admin($pageNo=1){
+
+        $limit = 10;
+        $offset = ($pageNo-1) * $limit;
+
+        $fields = ["searchText","start","end","sort","room_id"];
+
+        $data = getRequestData($fields,$this->request);
+
+        foreach($fields as $field){
+            if(!array_key_exists($field,$data)){
+                $data[$field] = null;
+            }
+        }
+
+        //echo "<pre>";print_r($data);die;
+
+        $roomReservationModel = new RoomReservationModel();
+
+        $result = $roomReservationModel->get_meeting_list_pagination_admin($limit,$offset,$data);
+
+        echo json_encode(
+            [
+                "status" => "success",
+                "data" => $result
+            ]
+        );
+    }
+    
+
+    
 }
 
 ?>

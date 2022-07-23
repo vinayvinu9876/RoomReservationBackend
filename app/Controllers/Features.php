@@ -62,50 +62,53 @@ class Features extends BaseController{
 
         $data = getRequestData($fields,$this->request);
 
-        $data = [
-            "id" => $id,
-            "updated_at"=> date('Y-m-d H:i:s')
-        ];
+        $data["id"] =  $id;
+        $data["updated_at"] = date('Y-m-d H:i:s');
+        
 
         $validationRes = validateFields($data,"features_update");
 
         if(!$validationRes["success"]){
-            echo view("util/error_messages.php",['errors' => $validationRes["errors"]]);
+            echo json_encode([
+                "status" => "failure",
+                "message" => $validationRes["errors"][0],
+            ]);
             return;
         }
 
         try{
-            $featureModel->update($data["id"],$data);
-            echo view("util/success.php",["message"=>"Feature updated succesfully"]);
+            $result = $featureModel->update_feature($data);
+            echo json_encode(
+                [
+                    "status" => "success",
+                    "updateStatus" => $result,
+                    "data" => $data
+                ]
+            );
         }
         catch(Exception $e){
-            echo view("util/error_messages.php",["errors"=>[$e.message()]]);
+            echo json_encode(
+                [
+                    "status" => "failure",
+                    "message" => $e->message()
+                ]
+            );  
         }
     }
 
-    public function read($status=null){
+    public function read($pageNo=1){
 
+        $limit  = 15; 
+        $offset = ($pageNo-1)*$limit;
+        
         $featuresModel = new FeaturesModel();
 
-        $search=$this->request->getPost('search');
+        $data["search"] = $this->request->getVar('search');
+        $data["status"] = $this->request->getVar('status');
 
-        log_message("info","search = ".$search." status  =  ".$status);
+        $result = $featuresModel->read($pageNo,$limit,$offset,$data);
 
-        if($status===null && $search===null){
-            $data["features"] = $featuresModel->findAll();
-        }
-        else if($status===null && $search!==null){
-            $data["features"] = $featuresModel->like(["feature_name"=>"%".$search."%"])->findAll();
-        }
-        else if($status!==null && $search===null){
-            log_message("info","from status != null and srach == null");
-            $data["features"] = $featuresModel->where(["status"=>$status])->findAll();
-        }
-        else{
-            $data["features"] = $featuresModel->like("feature_name","%".$search."%")->where(["status"=>$status])->findAll();
-        }
-
-        echo json_encode(["status"=>"success","data"=>$data["features"]]);
+        echo json_encode(["status"=>"success","data"=>$result]);
     }
 }
 ?>

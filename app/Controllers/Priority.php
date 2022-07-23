@@ -29,7 +29,7 @@ class Priority extends BaseController{
     public function create(){
         $priorityModel = new PriorityModel();
 
-        $fields = ["name","desc","priority_no","status"];
+        $fields = ["name","desc","priority_no","status","role_ids"];
 
         $data = getRequestData($fields,$this->request);
 
@@ -62,7 +62,7 @@ class Priority extends BaseController{
             return;
         }
 
-        $fields = ["name","desc","priority_no","status"];
+        $fields = ["name","desc","priority_no","role_ids","status"];
 
         $data = getRequestData($fields,$this->request);
 
@@ -71,13 +71,21 @@ class Priority extends BaseController{
         $validationRes = validateFields($data,"priority_update");
 
         if(!$validationRes["success"]){
-            echo view("util/error_messages.php",["errors"=>$validationRes["errors"]]);
+            echo json_encode([
+                'status'=>'failure',
+                "message"=>array_pop($validationRes["errors"])
+            ]);
             return;
         }
 
         $data["updated_on"] = date('Y-m-d H:i:s');
-        $priorityModel->update($id,$data);
-        echo view("util/success.php",["message"=>"Priority updated succesfully"]);
+        $result = $priorityModel->update_priority($data);
+
+        echo json_encode([
+            "status" => "success",
+            "result" => $result,
+            "data" => $data
+        ]);
         return;
     }
 
@@ -92,7 +100,7 @@ class Priority extends BaseController{
             return;
         }
 
-        $result = $priorityModel->where(["id > "=>0])->findAll(); // cause id starts from 1 ha ha
+        $result = $priorityModel->where(["id > "=>0])->orderBy("priority_no","asc")->findAll(); // cause id starts from 1 ha ha
         $resultData = ["status"=>"success","data"=>$result];
         echo json_encode($resultData);
         return;

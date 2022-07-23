@@ -9,12 +9,14 @@ class RoomdownTime extends BaseController{
         return;
     }
  
-    public function create(){
+    public function create(){   
         $roomDownTimeModel = new RoomDownTimeModel();
 
         $fields = ["room_id","desc","start","end","day","status"];
 
         $data = getRequestData($fields,$this->request);
+
+        //echo "<pre>";print_r($data);
 
         $validationRes = validateFields($data,"room_down_time_create");
 
@@ -22,7 +24,6 @@ class RoomdownTime extends BaseController{
             echo json_encode(["status"=>"failure","message"=>"The method request must be post"]);
             return;
         }
-
 
         if(!$validationRes["success"]){
             log_message("info"," The error message is ".array_pop($validationRes["errors"]));

@@ -130,3 +130,5 @@ CREATE INDEX fk_room_media_media ON roomreservation.room_media ( media_id );
 CREATE INDEX fk_room_media_rooms ON roomreservation.room_media ( room_id );
 
 ALTER TABLE roomreservation.room_media ADD CONSTRAINT fk_room_media_media FOREIGN KEY ( media_id ) REFERENCES roomreservation.media( id ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+alter table priority add column role_ids varchar(4) after id;

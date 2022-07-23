@@ -5,8 +5,8 @@ if(!function_exists("getRequestData")){
     function getRequestData($fields,$request){
         $data = [];
         foreach ($fields as $param) {
-            if($request->getPost($param)!==null){
-                $data[$param] = $request->getPost($param);
+            if($request->getVar($param)){
+                $data[$param] = $request->getVar($param);
             }
         }
         return $data;
